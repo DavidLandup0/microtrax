@@ -1,0 +1,61 @@
+[build-system]
+requires = ["setuptools>=45", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "microtrax"
+version = "0.1.0"
+description = "Local-first, minimalist, micro experiment tracking for Machine Learning/Deep Learning workflows"
+readme = "README.md"
+requires-python = ">=3.8"
+license = {text = "MIT"}
+authors = [
+    {name = "microtrax"},
+]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Developers",
+    "Intended Audience :: Science/Research",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Topic :: Scientific/Engineering :: Artificial Intelligence",
+]
+dependencies = [
+    "numpy",
+    "matplotlib", 
+    "plotly>=5.0.0",
+    "pandas",
+    "fastapi",
+    "uvicorn[standard]",
+    "psutil",
+    "pillow",
+]
+
+[project.optional-dependencies]
+gpu = ["nvidia-ml-py3"]
+dev = ["pytest", "pytest-cov", "ruff"]
+
+[project.scripts]
+mtx = "microtrax.cli:main"
+
+[tool.setuptools]
+packages = ["microtrax"]
+include-package-data = true
+
+[tool.pytest.ini_options]
+testpaths = ["microtrax/tests"]
+addopts = "--cov=microtrax --cov-report=html --cov-report=term-missing"
+python_files = ["test_*.py", "*_test.py"]
+
+[tool.ruff]
+line-length = 88
+target-version = "py38"
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "C", "N"]
+ignore = ["E501"]  # Line too long

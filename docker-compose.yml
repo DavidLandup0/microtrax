@@ -1,0 +1,33 @@
+version: '3.8'
+
+services:
+  backend:
+    build:
+      context: .
+      dockerfile: microtrax/backend/Dockerfile
+    ports:
+      - "8080:8080"
+    volumes:
+      - ${MICROTRAX_LOGDIR:-~/.microtrax}:/data
+    environment:
+      - MICROTRAX_LOGDIR=/data
+    networks:
+      - microtrax
+
+  frontend:
+    build:
+      context: microtrax/frontend
+      dockerfile: Dockerfile
+    ports:
+      - "3000:3000"
+    depends_on:
+      - backend
+    networks:
+      - microtrax
+
+networks:
+  microtrax:
+    driver: bridge
+
+volumes:
+  microtrax_data:
