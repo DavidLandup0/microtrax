@@ -1,11 +1,11 @@
-<div style="text-align:center;"><h1>microtrax</h1></div>
-<div style="text-align:center;"><h6>Yet Another Experiment Tracking Library</h6></div>
+<div align="center"><h1>microtrax</h1></div>
+<div align="center"><h6>Yet Another Experiment Tracking Library</h6></div>
 
-<div style="text-align:center;"><h3>Local, minimalist, micro experiment tracking for Machine Learning/Deep Learning workflows.</h1></div>
+<div align="center"><h3>Local, minimalist, micro experiment tracking for Machine Learning/Deep Learning workflows.</h1></div>
 
 <hr>
 
-<div style="text-align:center;">
+<div align="center">
 Free. Fully local. Lightweight.
 </div>
 <hr>
@@ -14,7 +14,7 @@ No accounts, no setups. 3 lines to track.
 
 `microtrax` attempts to be a modern, minimalist library for experiment tracking. Inspired by TensorBoard.
 
-<div style="text-align:center;"><h2>Quickstart</h1></div>
+<div align="center"><h2>Quickstart</h1></div>
 
 ```bash
 $ pip install microtrax
@@ -47,7 +47,7 @@ This automatically starts both the FastAPI backend and React frontend!
 
 It's called a quickstart as if there's anything else you can do with it. Actually, that's pretty much it.
 
-<div style="text-align:center;"><h2>Design Philosophy</h2></div>
+<div align="center"><h2>Design Philosophy</h2></div>
 
 - Free forever.
 - Simplicity > feature-richness.
@@ -57,7 +57,7 @@ It's called a quickstart as if there's anything else you can do with it. Actuall
 - Easily extendable (standard stack + simple to add new components/routes)
 - No setups, no accounts, no enterprise versions.
 
-<div style="text-align:center;"><h2>Learning microtrax in 10 seconds</h2></div>
+<div align="center"><h2>Learning microtrax in 10 seconds</h2></div>
 
 - **Experiment:** whatever happens between `mtx.init()` and `mtx.finish()`, housing a series of `mtx.log()`s.
 - **Logbook:** Collection of experiments in a log directory.
@@ -65,7 +65,7 @@ It's called a quickstart as if there's anything else you can do with it. Actuall
 
 No need to learn anything else to use `microtrax`.
 
-<div style="text-align:center;"><h2>CLI Usage</h2></div>
+<div align="center"><h2>CLI Usage</h2></div>
 
 After installation, you can use the `mtx` command:
 
