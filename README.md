@@ -43,7 +43,6 @@ $ mtx serve -f ./logbook_dir
 
 This automatically starts both the FastAPI backend and React frontend!
 
-![]()
 
 It's called a quickstart as if there's anything else you can do with it. Actually, that's pretty much it.
 
@@ -93,6 +92,7 @@ mtx serve -f ./logbook_dir --host 0.0.0.0 -p 3000
 - `--host` - Host to bind to (default: localhost)
 - `--docker` - Run using Docker Compose instead of local servers
 
+**Note**: In pip install mode, the dashboard serves on the backend port. In development mode (git clone), frontend runs separately on port 3000.
 
 <br>
 
@@ -148,13 +148,24 @@ A highly standard stack ensures that the widest number of users can easily and c
 
   Data Flow:
   User Code ─> JSONL -> File System -> Backend -> JSON -> Frontend -> User
+```
 
-  Key Features:
-  • Local-first: All data stored in user's filesystem
-  • No external dependencies or accounts required
-  • Real-time dashboard with drag-and-drop interface
-  • Support for metrics, images, and system resources
-  • Framework agnostic - works with any ML library
+# git clone vs pip install
+
+When you run `git clone`, you 'll get both the source code for the frontend, backend and core libraries. This makes it possible to run `npm start` for the frontend:
+
+```
+$ git clone https://github.com/DavidLandup0/microtrax.git
+$ cd microtrax
+$ pip install -e .
+```
+
+When installing with `pip`, we can only ship Python + static files. The `pip` installable version of `microtrax` ships the frontend as a pre-built bundle of static files. 
+
+This means the frontend is served as static files rather than through `npm start`:
+
+```
+$ pip install microtrax
 ```
 
 # Docker Compose

@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "microtrax"
-version = "0.1.1"
+version = "0.1.2"
 description = "Local-first, minimalist, micro experiment tracking for Machine Learning/Deep Learning workflows"
 readme = "README.md"
 requires-python = ">=3.8"
@@ -43,9 +43,12 @@ dev = ["pytest", "pytest-cov", "ruff"]
 [project.scripts]
 mtx = "microtrax.cli:main"
 
-[tool.setuptools]
-packages = ["microtrax"]
-include-package-data = true
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["microtrax*"]
+
+[tool.setuptools.package-data]
+microtrax = ["frontend/build/**/*", "frontend/build/static/**/*"]
 
 [tool.pytest.ini_options]
 testpaths = ["microtrax/tests"]
