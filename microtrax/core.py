@@ -3,6 +3,7 @@ import time
 import uuid
 import threading
 import atexit
+import os
 from datetime import datetime
 from pathlib import Path
 from typing import Any, Dict, Optional
@@ -32,7 +33,8 @@ def _cleanup_on_exit():
                 "type": "metadata",
                 "end_time": time.time(),
                 "total_steps": _current_experiment.step_counter,
-                "status": ExperimentStatus.INTERRUPTED.value
+                "status": ExperimentStatus.INTERRUPTED.value,
+                "process_pid": os.getpid()
             }
             _current_experiment._append_to_log(end_metadata)
             _current_experiment = None
@@ -42,6 +44,14 @@ def _cleanup_on_exit():
             _resource_tracker = None
     except Exception:
         pass  # Silent cleanup
+
+
+def _is_process_running(pid: int) -> bool:
+    """Check if a process with given PID is still running"""
+    try:
+        return psutil.pid_exists(pid)
+    except Exception:
+        return False
 
 
 def _recover_incomplete_experiments(logdir: str):
@@ -71,17 +81,34 @@ def _recover_incomplete_experiments(logdir: str):
                     except json.JSONDecodeError:
                         pass
 
-                # Find experiment metadata to get step count
+                # Find experiment metadata and check if process is still running
                 experiment_id = file_path.stem
                 step_count = 0
+                process_pid = None
+                experiment_start_time = None
 
                 for line in lines:
                     try:
                         entry = json.loads(line.strip())
-                        if entry.get('type') == 'log':
+                        if entry.get('type') == 'metadata':
+                            if 'process_pid' in entry:
+                                process_pid = entry.get('process_pid')
+                            if 'start_time' in entry:
+                                experiment_start_time = entry.get('start_time')
+                        elif entry.get('type') == 'log':
                             step_count = max(step_count, entry.get('data', {}).get('step', 0) + 1)
                     except (json.JSONDecodeError, TypeError):
                         continue
+
+                # Check if the experiment process is still running
+                if process_pid and _is_process_running(process_pid):
+                    # Process is still running, don't mark as recovered
+                    continue
+
+                # Check if experiment was started very recently (less than 10 seconds ago)
+                # This prevents marking experiments as incomplete that just started
+                if experiment_start_time and (time.time() - experiment_start_time) < 10:
+                    continue
 
                 # Append completion metadata
                 recovery_metadata = {
@@ -169,7 +196,8 @@ class Experiment:
             "start_time_iso": datetime.fromtimestamp(self.start_time).isoformat(),
             "track_resources": self.track_resources,
             "has_images": self.has_images,
-            "status": ExperimentStatus.RUNNING.value
+            "status": ExperimentStatus.RUNNING.value,
+            "process_pid": os.getpid()
         }
         self._append_to_log(metadata)
 
@@ -238,7 +266,8 @@ class Experiment:
             "type": "metadata",
             "end_time": time.time(),
             "total_steps": self.step_counter,
-            "status": ExperimentStatus.COMPLETED.value
+            "status": ExperimentStatus.COMPLETED.value,
+            "process_pid": os.getpid()
         }
         self._append_to_log(end_metadata)
 
