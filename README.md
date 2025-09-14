@@ -43,6 +43,7 @@ $ mtx serve -f ./logbook_dir
 
 This automatically starts both the FastAPI backend and React frontend!
 
+<img width="1364" height="636" alt="image" src="https://github.com/user-attachments/assets/08d3b4be-d47e-45c5-a8d1-2414c91c8d8e" />
 
 It's called a quickstart as if there's anything else you can do with it. Actually, that's pretty much it.
 
@@ -92,7 +93,6 @@ mtx serve -f ./logbook_dir --host 0.0.0.0 -p 3000
 - `--host` - Host to bind to (default: localhost)
 - `--docker` - Run using Docker Compose instead of local servers
 
-**Note**: In pip install mode, the dashboard serves on the backend port. In development mode (git clone), frontend runs separately on port 3000.
 
 <br>
 
@@ -150,23 +150,10 @@ A highly standard stack ensures that the widest number of users can easily and c
   User Code ─> JSONL -> File System -> Backend -> JSON -> Frontend -> User
 ```
 
-# git clone vs pip install
+### pip-Installed vs Installed from Source
 
-When you run `git clone`, you 'll get both the source code for the frontend, backend and core libraries. This makes it possible to run `npm start` for the frontend:
-
-```
-$ git clone https://github.com/DavidLandup0/microtrax.git
-$ cd microtrax
-$ pip install -e .
-```
-
-When installing with `pip`, we can only ship Python + static files. The `pip` installable version of `microtrax` ships the frontend as a pre-built bundle of static files. 
-
-This means the frontend is served as static files rather than through `npm start`:
-
-```
-$ pip install microtrax
-```
+When installing from `pip`, we pre-package the frontend files and ship the build. It's served as static files on `localhost:8080`.
+When installing from source, the frontend files are built and exposed through `npm start`, which allows hot reloading and easier changes to the frontend. Then, it's exposed on `localhost:3000`.
 
 # Docker Compose
 

@@ -23,7 +23,8 @@ class FrontendService:
         # Detect if we're running from pip install (static files) or source (dev mode)
         current_dir = Path(__file__).parent.parent.parent  # microtrax/
         frontend_build_dir = current_dir / "frontend" / "build"
-        has_built_frontend = frontend_build_dir.exists()
+        packaged_marker = current_dir / ".packaged"
+        has_built_frontend = packaged_marker.exists()
 
         if has_built_frontend:
             self._setup_production_mode(frontend_build_dir)

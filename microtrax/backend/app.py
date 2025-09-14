@@ -14,8 +14,8 @@ def create_app(logdir: str) -> FastAPI:
     app.state.logdir = logdir
 
     # Include routers with dependency injection for logdir
-    app.include_router(experiments.router, prefix="/api")
-    app.include_router(plots.router, prefix="/api")
-    app.include_router(images.router, prefix="/api")
+    app.include_router(experiments.router)
+    app.include_router(plots.router)
+    app.include_router(images.router)
 
     return app

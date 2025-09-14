@@ -48,7 +48,7 @@ where = ["."]
 include = ["microtrax*"]
 
 [tool.setuptools.package-data]
-microtrax = ["frontend/build/**/*", "frontend/build/static/**/*"]
+microtrax = ["frontend/build/**/*", "frontend/build/static/**/*", ".packaged"]
 
 [tool.pytest.ini_options]
 testpaths = ["microtrax/tests"]

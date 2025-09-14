@@ -23,21 +23,34 @@ def run_dashboard(logdir: Optional[str] = None, backend_port: int = 8080, fronte
     frontend_dir = Path(__file__).parent / 'frontend'
     node_modules = frontend_dir / 'node_modules'
 
+    # Detect if we're in production mode (pip install) or development mode (source)
+    packaged_marker = Path(__file__).parent / ".packaged"
+    has_built_frontend = packaged_marker.exists()
+
     logging.info("🚀 Starting microtrax dashboard...")
     logging.info(f"📁 Loading experiments from: {logdir}")
     logging.info(f"🎯 Backend API: http://{host}:{backend_port}")
-    logging.info(f"🎨 Frontend UI: http://localhost:{frontend_port}")
+
+    if has_built_frontend:
+        logging.info("📦 Using bundled frontend")
+        logging.info(f"🎨 Frontend UI: http://{host}:{backend_port}")
+    else:
+        logging.info("🛠️  Using development mode")
+        logging.info(f"🎨 Frontend UI: http://localhost:{frontend_port}")
+
     logging.info(f"📊 API docs: http://{host}:{backend_port}/docs")
 
-    # Check if npm is available
-    try:
-        subprocess.run(['npm', '--version'], capture_output=True, check=True)
-    except (subprocess.CalledProcessError, FileNotFoundError):
-        logging.info("❌ npm not found. Please install Node.js and npm to use the React frontend.")
+    # Only check npm and install dependencies in development mode
+    if not has_built_frontend:
+        # Check if npm is available
+        try:
+            subprocess.run(['npm', '--version'], capture_output=True, check=True)
+        except (subprocess.CalledProcessError, FileNotFoundError):
+            logging.info("❌ npm not found. Please install Node.js and npm to use the React frontend.")
 
-    if not node_modules.exists():
-        logging.info("📦 Installing frontend dependencies...")
-        subprocess.run(['npm', 'install'], cwd=frontend_dir, check=True)
+        if not node_modules.exists():
+            logging.info("📦 Installing frontend dependencies...")
+            subprocess.run(['npm', 'install'], cwd=frontend_dir, check=True)
 
     # Start backend in a separate process
     backend_process = None
@@ -59,11 +72,19 @@ def run_dashboard(logdir: Optional[str] = None, backend_port: int = 8080, fronte
     try:
 
         backend_process = start_backend(logdir, host, backend_port)
-        frontend_process = start_frontend(frontend_dir, frontend_port)
+
+        # Only start frontend process in development mode
+        if not has_built_frontend:
+            frontend_process = start_frontend(frontend_dir, frontend_port)
 
         logging.info("✅ microtrax dashboard is running!")
         logging.info(f"   Backend:  http://localhost:{backend_port}")
-        logging.info(f"   Frontend: http://localhost:{frontend_port}")
+
+        if has_built_frontend:
+            logging.info(f"   Frontend: http://localhost:{backend_port} (bundled)")
+        else:
+            logging.info(f"   Frontend: http://localhost:{frontend_port}")
+
         logging.info("   Press Ctrl+C to stop")
 
         # Wait for processes
