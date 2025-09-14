@@ -2,7 +2,6 @@
 
 from pathlib import Path
 from fastapi import FastAPI
-from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 from fastapi.responses import FileResponse
 
@@ -19,19 +18,11 @@ class FrontendService:
         self._setup_frontend()
 
     def _setup_frontend(self):
-        """Configure frontend serving based on environment"""
-        # Detect if we're running from pip install (static files) or source (dev mode)
         current_dir = Path(__file__).parent.parent.parent  # microtrax/
         frontend_build_dir = current_dir / "frontend" / "build"
-        packaged_marker = current_dir / ".packaged"
-        has_built_frontend = packaged_marker.exists()
+        self._serve_frontend(frontend_build_dir)
 
-        if has_built_frontend:
-            self._setup_production_mode(frontend_build_dir)
-        else:
-            self._setup_development_mode()
-
-    def _setup_production_mode(self, frontend_build_dir: Path):
+    def _serve_frontend(self, frontend_build_dir: Path):
         """Setup production mode with bundled static files"""
         print("📦 Using bundled frontend")
 
@@ -46,19 +37,3 @@ class FrontendService:
         @self.app.get("/")
         async def root():
             return FileResponse(str(frontend_build_dir / "index.html"))
-
-    def _setup_development_mode(self):
-        """Setup development mode with CORS for separate React dev server"""
-        print("🛠️  Using development mode (expecting React dev server on :3000)")
-
-        self.app.add_middleware(
-            CORSMiddleware,
-            allow_origins=["http://localhost:3000"],
-            allow_credentials=True,
-            allow_methods=["*"],
-            allow_headers=["*"],
-        )
-
-        @self.app.get("/")
-        async def root():
-            return {"message": "microtrax API", "docs": "/docs", "frontend": "http://localhost:3000"}

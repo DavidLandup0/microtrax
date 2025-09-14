@@ -80,7 +80,7 @@ mtx serve -f ./logbook_dir --docker
 mtx list -f ./logbook_dir
 
 # Serve with custom host/port
-mtx serve -f ./logbook_dir --host 0.0.0.0 -p 3000
+mtx serve -f ./logbook_dir --host 0.0.0.0 -p 8080
 ```
 
 **Commands:**
@@ -89,7 +89,7 @@ mtx serve -f ./logbook_dir --host 0.0.0.0 -p 3000
 
 **Options:**
 - `-f, --logdir` - Directory containing experiments (default: ~/.microtrax)
-- `-p, --port` - Port to run dashboard on (default: 8080, frontend runs on 3000)  
+- `-p, --port` - Port to run dashboard on (default: 8080)  
 - `--host` - Host to bind to (default: localhost)
 - `--docker` - Run using Docker Compose instead of local servers
 
@@ -127,7 +127,7 @@ A highly standard stack ensures that the widest number of users can easily and c
   │                 │      │                   │    │                             │
   │  mtx.init()     │─────▶│  ~/.microtrax/    │◀───│ ┌─────────────────────────┐ │
   │  mtx.log({...}) │      │    experiments/   │    │ │    React Frontend       │ │
-  │  mtx.finish()   │      │    resources/     │    │ │    (Port 3000)          │ │
+  │  mtx.finish()   │      │    resources/     │    │ │    (Port 8080)          │ │
   │                 │      │                   │    │ │  - Plot visualizations  │ │
   └─────────────────┘      │  exp_id.jsonl     │    │ │  - Experiment browser   │ │
                            │  (w/ base64 imgs) │    │ │  - Settings panel       │ │
@@ -150,10 +150,10 @@ A highly standard stack ensures that the widest number of users can easily and c
   User Code ─> JSONL -> File System -> Backend -> JSON -> Frontend -> User
 ```
 
-### pip-Installed vs Installed from Source
+### Frontend Serving
 
-When installing from `pip`, we pre-package the frontend files and ship the build. It's served as static files on `localhost:8080`.
-When installing from source, the frontend files are built and exposed through `npm start`, which allows hot reloading and easier changes to the frontend. Then, it's exposed on `localhost:3000`.
+The frontend is served as static files on the same port as the backend (`localhost:8080`).
+You can separately build the frontend for hot reloads during development of new features if you're customizing the library.
 
 # Docker Compose
 
@@ -174,7 +174,7 @@ docker-compose up
 
 This will start:
 - **Backend API** on port 8080
-- **Frontend dashboard** on port 3000
+- **Frontend dashboard** on port 8080
 
 The frontend automatically proxies API requests to the backend container via `nginx`.
 
@@ -186,7 +186,7 @@ Default: `~/.microtrax` if not specified
 
 ## Access
 
-- Dashboard: http://localhost:3000
+- Dashboard: http://localhost:8080
 - Backend API: http://localhost:8080
 
 The frontend handles routing and proxies `/api/*` requests to the backend automatically.
@@ -213,9 +213,10 @@ $ cd microtrax
 $ pip install microtrax
 $ pip install pytest ruff
 
-# Install frontend dependencies  
+# Install and build frontend
 $ cd microtrax/frontend
 $ npm install
+$ npm run build
 ```
 
 3. Run tests

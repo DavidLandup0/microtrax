@@ -140,7 +140,7 @@ def main():
     # Serve command
     serve_parser = subparsers.add_parser('serve', help='Start the full dashboard (React frontend + FastAPI backend)')
     serve_parser.add_argument('-f', '--logdir', help='Directory containing experiments (default: ~/.microtrax)')
-    serve_parser.add_argument('-p', '--port', type=int, default=8080, help='Backend port (default: 8080, frontend runs on 3000)')
+    serve_parser.add_argument('-p', '--port', type=int, default=8080, help='Port for dashboard (default: 8080)')
     serve_parser.add_argument('--host', default='localhost', help='Host to bind to (default: localhost)')
     serve_parser.add_argument('--docker', action='store_true', help='Run using Docker Compose instead of local servers')
     serve_parser.set_defaults(func=cmd_serve)
