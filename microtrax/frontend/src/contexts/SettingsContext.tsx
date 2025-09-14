@@ -4,6 +4,8 @@ export interface PlotSettings {
   smoothing: number;
   colorPalette: string;
   plotStyle: string;
+  autoRefreshEnabled: boolean;
+  autoRefreshInterval: number; // in seconds
 }
 
 export interface ColorPalette {
@@ -23,6 +25,8 @@ const defaultPlotSettings: PlotSettings = {
   smoothing: 0,
   colorPalette: 'plotly',
   plotStyle: 'none',
+  autoRefreshEnabled: true,
+  autoRefreshInterval: 5, // 5 seconds
 };
 
 const SettingsContext = createContext<SettingsContextType | undefined>(undefined);

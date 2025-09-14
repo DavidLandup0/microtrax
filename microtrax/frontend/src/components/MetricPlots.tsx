@@ -155,7 +155,7 @@ const MetricPlots: React.FC<MetricPlotsProps> = ({
     setLayouts(newLayouts);
   }, [selectedMetrics, columns]);
 
-  // Load plots when selections change
+  // Load plots when selections change or experiments data changes
   useEffect(() => {
     setPlots({});
     setErrors({});
@@ -206,7 +206,7 @@ const MetricPlots: React.FC<MetricPlotsProps> = ({
     };
 
     loadPlots();
-  }, [selectedExperiments, selectedMetrics, plotSettings]);
+  }, [selectedExperiments, selectedMetrics, plotSettings, experiments]);
 
   if (selectedExperiments.length === 0) {
     return (

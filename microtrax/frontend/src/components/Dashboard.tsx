@@ -25,9 +25,11 @@ import ImageViewer from './ImageViewer';
 import SettingsSidePanel from './SettingsSidePanel';
 import { ApiService } from '../services/api';
 import { Experiment } from '../types';
+import { useSettings } from '../contexts/SettingsContext';
 
 const Dashboard: React.FC = () => {
-  const [experiments, setExperiments] = useState<Record<string, Experiment>>({});
+  const { plotSettings } = useSettings();
+  const [experiments, setExperiments] = useState<Record<string, Experiment>>({}); 
   const [metrics, setMetrics] = useState<string[]>([]);
   const [selectedExperiments, setSelectedExperiments] = useState<string[]>([]);
   const [selectedMetrics, setSelectedMetrics] = useState<string[]>([]);
@@ -53,10 +55,19 @@ const Dashboard: React.FC = () => {
 
   useEffect(() => {
     loadData();
-    // Auto-refresh every 30 seconds for live experiments
-    const interval = setInterval(loadData, 30000);
-    return () => clearInterval(interval);
-  }, []);
+    
+    // Set up auto-refresh based on settings
+    let interval: NodeJS.Timeout | null = null;
+    if (plotSettings.autoRefreshEnabled) {
+      interval = setInterval(loadData, plotSettings.autoRefreshInterval * 1000);
+    }
+    
+    return () => {
+      if (interval) {
+        clearInterval(interval);
+      }
+    };
+  }, [plotSettings.autoRefreshEnabled, plotSettings.autoRefreshInterval]);
 
   const handleExperimentToggle = (experimentId: string) => {
     setSelectedExperiments(prev => 

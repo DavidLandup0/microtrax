@@ -12,11 +12,14 @@ import {
   Drawer,
   IconButton,
   Collapse,
+  Switch,
+  FormControlLabel,
 } from '@mui/material';
 import {
   Settings as SettingsIcon,
   ChevronLeft as ChevronLeftIcon,
   ChevronRight as ChevronRightIcon,
+  Refresh as RefreshIcon,
 } from '@mui/icons-material';
 import { useSettings } from '../contexts/SettingsContext';
 import { ApiService } from '../services/api';
@@ -159,6 +162,45 @@ const SettingsSidePanel: React.FC<SettingsSidePanelProps> = ({ open, onClose }) 
                   ))}
                 </Select>
               </FormControl>
+            </Paper>
+
+            {/* Auto-Refresh Settings */}
+            <Paper sx={{ p: 2, mb: 2 }} elevation={1}>
+              <Typography variant="subtitle1" gutterBottom>
+                <RefreshIcon sx={{ mr: 1, fontSize: 20, verticalAlign: 'text-bottom' }} />
+                Auto-Refresh
+              </Typography>
+              <FormControlLabel
+                control={
+                  <Switch
+                    checked={plotSettings.autoRefreshEnabled}
+                    onChange={(e) => updatePlotSettings({ autoRefreshEnabled: e.target.checked })}
+                    size="small"
+                  />
+                }
+                label="Enable auto-refresh"
+                sx={{ mb: 2 }}
+              />
+              
+              {plotSettings.autoRefreshEnabled && (
+                <>
+                  <Typography variant="body2" color="text.secondary" gutterBottom>
+                    Refresh interval (seconds)
+                  </Typography>
+                  <FormControl fullWidth size="small">
+                    <Select
+                      value={plotSettings.autoRefreshInterval}
+                      onChange={(e) => updatePlotSettings({ autoRefreshInterval: e.target.value as number })}
+                    >
+                      <MenuItem value={5}>5 seconds</MenuItem>
+                      <MenuItem value={10}>10 seconds</MenuItem>
+                      <MenuItem value={15}>15 seconds</MenuItem>
+                      <MenuItem value={30}>30 seconds</MenuItem>
+                      <MenuItem value={60}>1 minute</MenuItem>
+                    </Select>
+                  </FormControl>
+                </>
+              )}
             </Paper>
           </Box>
         </Collapse>
