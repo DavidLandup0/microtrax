@@ -173,10 +173,7 @@ docker-compose up
 ```
 
 This will start:
-- **Backend API** on port 8080
-- **Frontend dashboard** on port 8080
-
-The frontend automatically proxies API requests to the backend container via `nginx`.
+- **Backend API and frontend served** on port 8080
 
 ## Configuration
 
