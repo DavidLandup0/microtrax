@@ -38,13 +38,8 @@ class FrontendService:
         # Mount static files
         self.app.mount("/static", StaticFiles(directory=str(frontend_build_dir / "static")), name="static")
 
-        # Serve React app for all non-API routes
         @self.app.get("/{full_path:path}")
         async def serve_react_app(full_path: str):
-            # API routes should not be caught by this
-            if full_path.startswith("api/") or full_path == "docs" or full_path == "openapi.json":
-                return {"error": "Not found"}
-            # Serve index.html for all other routes (React Router)
             return FileResponse(str(frontend_build_dir / "index.html"))
 
         # Override root to serve React app
