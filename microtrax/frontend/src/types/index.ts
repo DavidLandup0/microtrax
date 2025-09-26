@@ -22,6 +22,7 @@ export interface ExperimentsResponse {
 export interface PlotRequest {
   experiments: string[];
   metric: string;
+  x_axis_mode?: 'step' | 'time';
 }
 
 export interface ImagesRequest {

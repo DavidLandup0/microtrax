@@ -1,10 +1,11 @@
 
-from typing import List
+from typing import List, Optional
 from pydantic import BaseModel
 
 class PlotRequest(BaseModel):
     experiments: List[str]
     metric: str
+    x_axis_mode: Optional[str] = 'step'
 
 class ImagesRequest(BaseModel):
     experiment: str
