@@ -3,6 +3,47 @@ import plotly.graph_objects as go
 from microtrax.constants import RESOURCE_METRICS
 
 
+def _extract_resource_data(entry: Dict, metric: str, start_time: float, times: List, values: List):
+    timestamp = entry.get('timestamp', 0)
+    relative_time = (timestamp - start_time) / 60.0
+
+    if metric.startswith('gpu_'):
+        gpu_data = entry.get('gpu', [])
+        if not gpu_data:
+            return
+        # Average across all GPUs
+        gpu_key = metric.replace('gpu_', '')
+        value = sum(gpu[gpu_key] for gpu in gpu_data) / len(gpu_data)
+        times.append(relative_time)
+        values.append(value)
+    elif metric in entry:
+        times.append(relative_time)
+        values.append(entry[metric])
+
+
+def _extract_log_data(entry: Dict, metric: str, start_time: float, x_axis: str, steps: List, times: List, values: List):
+    data = entry.get('data', {})
+    if metric not in data:
+        return
+
+    entry_step = data.get('step')
+    entry_timestamp = entry.get('timestamp', 0)
+
+    # Only include if we have the required x-axis data
+    if (x_axis == 'step' and entry_step is not None) or (x_axis == 'time' and entry_timestamp > 0):
+        if entry_step is not None:
+            steps.append(entry_step)
+        if entry_timestamp > 0:
+            times.append((entry_timestamp - start_time) / 60.0)
+
+        value = data[metric]
+        # Handle NaN values gracefully
+        if isinstance(value, (int, float)) and not (isinstance(value, float) and str(value) == 'nan'):
+            values.append(value)
+        else:
+            values.append(None)
+
+
 def create_metric_plot(experiments: Dict[str, Dict[str, Any]], selected_experiments: List[str], metric: str, x_axis: str = 'step') -> Dict:
     """Create a Plotly figure for a specific metric"""
     fig = go.Figure()
@@ -27,42 +68,9 @@ def create_metric_plot(experiments: Dict[str, Dict[str, Any]], selected_experime
 
             for entry in entries:
                 if is_resource:
-                    timestamp = entry.get('timestamp', 0)
-                    relative_time = (timestamp - start_time) / 60.0
-
-                    if metric.startswith('gpu_'):
-                        gpu_data = entry.get('gpu', [])
-                        if not gpu_data:
-                            continue
-                        # Average across all GPUs
-                        gpu_key = metric.replace('gpu_', '')
-                        value = sum(gpu[gpu_key] for gpu in gpu_data) / len(gpu_data)
-                        times.append(relative_time)
-                        values.append(value)
-                    elif metric in entry:
-                        times.append(relative_time)
-                        values.append(entry[metric])
+                    _extract_resource_data(entry, metric, start_time, times, values)
                 else:
-                    data = entry.get('data', {})
-                    if metric not in data:
-                        continue
-
-                    entry_step = data.get('step')
-                    entry_timestamp = entry.get('timestamp', 0)
-
-                    # Only include if we have the required x-axis data
-                    if (x_axis == 'step' and entry_step is not None) or (x_axis == 'time' and entry_timestamp > 0):
-                        if entry_step is not None:
-                            steps.append(entry_step)
-                        if entry_timestamp > 0:
-                            times.append((entry_timestamp - start_time) / 60.0)
-
-                        value = data[metric]
-                        # Handle NaN values gracefully
-                        if isinstance(value, (int, float)) and not (isinstance(value, float) and str(value) == 'nan'):
-                            values.append(value)
-                        else:
-                            values.append(None)
+                    _extract_log_data(entry, metric, start_time, x_axis, steps, times, values)
 
         # Choose x-axis data based on mode and metric type
         if metric in RESOURCE_METRICS:
