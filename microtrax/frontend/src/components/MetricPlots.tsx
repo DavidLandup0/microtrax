@@ -177,6 +177,7 @@ const MetricPlots: React.FC<MetricPlotsProps> = ({
           const plotData = await ApiService.getPlot({
             experiments: selectedExperiments,
             metric,
+            x_axis: plotSettings.xAxisMode,
           });
           return { metric, data: plotData, error: null };
         } catch (error) {
@@ -354,7 +355,7 @@ const MetricPlots: React.FC<MetricPlotsProps> = ({
                     }}
                   >
                     <Plot
-                      key={`${metric}-${columns}-${containerWidth}-${plotSettings.smoothing}-${plotSettings.colorPalette}`}
+                      key={`${metric}-${columns}-${containerWidth}-${plotSettings.smoothing}-${plotSettings.colorPalette}-${plotSettings.xAxisMode}`}
                       data={applySmoothingToData(
                         plots[metric].data || [],
                         plotSettings.smoothing

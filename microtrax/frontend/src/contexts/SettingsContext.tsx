@@ -6,6 +6,7 @@ export interface PlotSettings {
   plotStyle: string;
   autoRefreshEnabled: boolean;
   autoRefreshInterval: number; // in seconds
+  xAxisMode: 'step' | 'time';
 }
 
 export interface ColorPalette {
@@ -27,6 +28,7 @@ const defaultPlotSettings: PlotSettings = {
   plotStyle: 'none',
   autoRefreshEnabled: true,
   autoRefreshInterval: 5, // 5 seconds
+  xAxisMode: 'step',
 };
 
 const SettingsContext = createContext<SettingsContextType | undefined>(undefined);

@@ -47,7 +47,12 @@ async def create_plot(request: Request, plot_request: PlotRequest):
 
     try:
         experiments = load_experiments(logdir)
-        plot_data = create_metric_plot(experiments, plot_request.experiments, plot_request.metric)
+        plot_data = create_metric_plot(
+            experiments,
+            plot_request.experiments,
+            plot_request.metric,
+            plot_request.x_axis or 'step'
+        )
         return plot_data
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))

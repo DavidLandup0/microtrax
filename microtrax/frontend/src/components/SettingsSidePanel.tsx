@@ -20,6 +20,7 @@ import {
   ChevronLeft as ChevronLeftIcon,
   ChevronRight as ChevronRightIcon,
   Refresh as RefreshIcon,
+  Timeline as TimelineIcon,
 } from '@mui/icons-material';
 import { useSettings } from '../contexts/SettingsContext';
 import { ApiService } from '../services/api';
@@ -201,6 +202,29 @@ const SettingsSidePanel: React.FC<SettingsSidePanelProps> = ({ open, onClose }) 
                   </FormControl>
                 </>
               )}
+            </Paper>
+
+            {/* X-Axis Mode Settings */}
+            <Paper sx={{ p: 2, mb: 2 }} elevation={1}>
+              <Typography variant="subtitle1" gutterBottom>
+                <TimelineIcon sx={{ mr: 1, fontSize: 20, verticalAlign: 'text-bottom' }} />
+                X-Axis Mode
+              </Typography>
+              <FormControlLabel
+                control={
+                  <Switch
+                    checked={plotSettings.xAxisMode === 'time'}
+                    onChange={(e) => updatePlotSettings({ xAxisMode: e.target.checked ? 'time' : 'step' })}
+                    size="small"
+                  />
+                }
+                label={plotSettings.xAxisMode === 'time' ? 'Clock time' : 'Steps'}
+              />
+              <Typography variant="body2" color="text.secondary" sx={{ mt: 1 }}>
+                {plotSettings.xAxisMode === 'time' 
+                  ? 'Show metrics over real time (minutes from start)' 
+                  : 'Show metrics over training steps'}
+              </Typography>
             </Paper>
           </Box>
         </Collapse>
