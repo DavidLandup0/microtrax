@@ -177,7 +177,7 @@ const MetricPlots: React.FC<MetricPlotsProps> = ({
           const plotData = await ApiService.getPlot({
             experiments: selectedExperiments,
             metric,
-            x_axis_mode: plotSettings.xAxisMode,
+            x_axis: plotSettings.xAxisMode,
           });
           return { metric, data: plotData, error: null };
         } catch (error) {

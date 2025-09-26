@@ -5,7 +5,7 @@ from pydantic import BaseModel
 class PlotRequest(BaseModel):
     experiments: List[str]
     metric: str
-    x_axis_mode: Optional[str] = 'step'
+    x_axis: Optional[str] = 'step'
 
 class ImagesRequest(BaseModel):
     experiment: str
