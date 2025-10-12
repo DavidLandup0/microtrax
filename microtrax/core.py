@@ -275,7 +275,9 @@ class Experiment:
                 self.step_counter = max(self.step_counter, step + 1)
 
             # Normalize to list of rows
-            if isinstance(data, dict):
+            if isinstance(data, str):
+                rows = [data]
+            elif isinstance(data, dict):
                 rows = [data]
             else:
                 rows = data
