@@ -18,10 +18,12 @@ import {
   Timeline as TimelineIcon,
   Image as ImageIcon,
   Settings as SettingsIcon,
+  TableChart as TableChartIcon,
 } from '@mui/icons-material';
 import ExperimentList from './ExperimentList';
 import MetricPlots from './MetricPlots';
 import ImageViewer from './ImageViewer';
+import TextView from './TextView';
 import SettingsSidePanel from './SettingsSidePanel';
 import { ApiService } from '../services/api';
 import { Experiment } from '../types';
@@ -33,7 +35,7 @@ const Dashboard: React.FC = () => {
   const [metrics, setMetrics] = useState<string[]>([]);
   const [selectedExperiments, setSelectedExperiments] = useState<string[]>([]);
   const [selectedMetrics, setSelectedMetrics] = useState<string[]>([]);
-  const [activeTab, setActiveTab] = useState<'plots' | 'images'>('plots');
+  const [activeTab, setActiveTab] = useState<'plots' | 'images' | 'text'>('plots');
   const [settingsOpen, setSettingsOpen] = useState(false);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -113,6 +115,7 @@ const Dashboard: React.FC = () => {
     exp => exp.metadata.status === 'running'
   ).length;
   const hasImages = Object.values(experiments).some(exp => exp.has_images);
+  const hasText = Object.values(experiments).some(exp => exp.has_text);
 
   return (
     <Box sx={{ flexGrow: 1, transform: 'scale(0.9)', transformOrigin: 'top left', width: '111.11%', height: '111.11%' }}>
@@ -205,6 +208,16 @@ const Dashboard: React.FC = () => {
                   clickable
                 />
               )}
+              {hasText && (
+                <Chip
+                  icon={<TableChartIcon />}
+                  label="Text"
+                  onClick={() => setActiveTab('text')}
+                  color={activeTab === 'text' ? 'primary' : 'default'}
+                  variant={activeTab === 'text' ? 'filled' : 'outlined'}
+                  clickable
+                />
+              )}
             </Box>
 
             {/* Content Area */}
@@ -221,6 +234,12 @@ const Dashboard: React.FC = () => {
                 )}
                 {activeTab === 'images' && (
                   <ImageViewer
+                    experiments={experiments}
+                    selectedExperiments={selectedExperiments}
+                  />
+                )}
+                {activeTab === 'text' && (
+                  <TextView
                     experiments={experiments}
                     selectedExperiments={selectedExperiments}
                   />

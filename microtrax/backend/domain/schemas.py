@@ -10,6 +10,9 @@ class PlotRequest(BaseModel):
 class ImagesRequest(BaseModel):
     experiment: str
 
+class TextRequest(BaseModel):
+    experiment: str
+
 class RenameExperimentRequest(BaseModel):
     name: str
 

@@ -6,8 +6,8 @@ import atexit
 import os
 from datetime import datetime
 from pathlib import Path
-from typing import Any, Dict, Optional
-from microtrax.constants import MTX_GLOBALDIR, EXPERIMENTS_DIR, RESOURCES_DIR
+from typing import Any, Dict, Optional, Union, List
+from microtrax.constants import MTX_GLOBALDIR, EXPERIMENTS_DIR, RESOURCES_DIR, TEXT_DIR
 
 from microtrax.enums import ExperimentStatus
 from microtrax.dashboard import run_dashboard
@@ -167,13 +167,16 @@ class Experiment:
         self.step_counter = 0
         self.start_time = time.time()
         self.has_images = False
+        self.has_text = False
 
         # Ensure directories exist
         _ensure_dir(str(self.experiments_dir))
         if track_resources:
             _ensure_dir(str(self.logdir / RESOURCES_DIR))
+        _ensure_dir(str(self.logdir / TEXT_DIR))
 
         self.log_file = self.experiments_dir / f"{experiment_id}.jsonl"
+        self.text_file = self.logdir / TEXT_DIR / f"{experiment_id}_text.jsonl"
 
         # Write metadata header
         self._write_metadata()
@@ -196,6 +199,7 @@ class Experiment:
             "start_time_iso": datetime.fromtimestamp(self.start_time).isoformat(),
             "track_resources": self.track_resources,
             "has_images": self.has_images,
+            "has_text": self.has_text,
             "status": ExperimentStatus.RUNNING.value,
             "process_pid": os.getpid()
         }
@@ -259,6 +263,60 @@ class Experiment:
             key: value
         }
         self._append_to_log(metadata)
+
+    def log_text_entry(self, data: Union[Dict[str, Any], List[Dict[str, Any]]], step: Optional[int] = None):
+        """Log text data to separate text file"""
+        try:
+            # Handle step
+            if step is None:
+                step = self.step_counter
+                self.step_counter += 1
+            else:
+                self.step_counter = max(self.step_counter, step + 1)
+
+            # Normalize to list of rows
+            if isinstance(data, str):
+                rows = [data]
+            elif isinstance(data, dict):
+                rows = [data]
+            else:
+                rows = data
+
+            # Handle default case: single string becomes {"text": value}
+            normalized_rows = []
+            for row in rows:
+                if isinstance(row, str):
+                    normalized_rows.append({"text": row})
+                else:
+                    normalized_rows.append(row)
+
+            # Extract column names from all rows
+            columns = []
+            for row in normalized_rows:
+                for key in row.keys():
+                    if key not in columns:
+                        columns.append(key)
+
+            # Create text entry
+            entry = {
+                "type": "text",
+                "step": step,
+                "timestamp": time.time(),
+                "columns": columns,
+                "rows": normalized_rows
+            }
+
+            # Write to text file
+            _dump_json(self.text_file, entry, mode='a')
+
+            # Set has_text flag on first text log
+            if not self.has_text:
+                self.has_text = True
+                self._update_metadata_flag('has_text', True)
+
+        except Exception as e:
+            logging.warn(f"Exception occurred while logging text: {str(e)}")
+            pass
 
     def finalize(self):
         """Finalize experiment with end metadata"""
@@ -469,6 +527,28 @@ def _log_images_impl(images, step: Optional[int], labels):
             _current_experiment._update_metadata_flag('has_images', True)
 
     _current_experiment.log_entry(entry_data)
+
+def log_text(data: Union[str, Dict[str, Any], List[Dict[str, Any]]], step: Optional[int] = None):
+    """
+    Log text data to separate text file.
+
+    Args:
+        data: String, dict, or list of dicts with text data
+        step: Step number (auto-incremented if not provided)
+
+    Usage:
+        mtx.log_text("Simple text")
+        mtx.log_text({"input": "...", "output": "..."}, step=5)
+        mtx.log_text([
+            {"input": "Q1", "output": "A1"},
+            {"input": "Q2", "output": "A2"}
+        ], step=10)
+    """
+    return _safe_execute(_log_text_impl, data, step)
+
+def _log_text_impl(data: Union[str, Dict[str, Any], List[Dict[str, Any]]], step: Optional[int]):
+    _is_experiment_active()
+    _current_experiment.log_text_entry(data, step)
 
 def finish():
     """
