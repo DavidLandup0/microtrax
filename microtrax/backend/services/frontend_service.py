@@ -24,7 +24,6 @@ class FrontendService:
 
     def _serve_frontend(self, frontend_build_dir: Path):
         """Setup production mode with bundled static files"""
-        print("📦 Using bundled frontend")
 
         # Mount static files
         self.app.mount("/static", StaticFiles(directory=str(frontend_build_dir / "static")), name="static")

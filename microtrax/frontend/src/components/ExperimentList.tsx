@@ -29,6 +29,7 @@ import {
   Refresh as RecoveredIcon,
   Image as ImageIcon,
   Monitor as ResourceIcon,
+  TableChart as TextIcon,
   MoreVert as MoreVertIcon,
   Edit as EditIcon,
   Delete as DeleteIcon,
@@ -112,7 +113,7 @@ const ExperimentList: React.FC<ExperimentListProps> = ({
 
   const handleDeleteClick = () => {
     setDeleteDialogOpen(true);
-    handleMenuClose();
+    setMenuAnchor(null); // Close menu but keep selectedExperiment
   };
 
   const handleRename = async () => {
@@ -138,17 +139,24 @@ const ExperimentList: React.FC<ExperimentListProps> = ({
   };
 
   const handleDelete = async () => {
+    console.log('handleDelete called, selectedExperiment:', selectedExperiment);
     if (selectedExperiment) {
       try {
         setActionLoading(true);
         setError(null);
+        console.log('Calling onExperimentDelete with:', selectedExperiment);
         await onExperimentDelete(selectedExperiment);
+        console.log('Delete successful');
         setDeleteDialogOpen(false);
+        setSelectedExperiment(null);
       } catch (err) {
+        console.error('Delete error:', err);
         setError(err instanceof Error ? err.message : 'Failed to delete experiment');
       } finally {
         setActionLoading(false);
       }
+    } else {
+      console.log('No selectedExperiment, cannot delete');
     }
   };
 
@@ -259,6 +267,16 @@ const ExperimentList: React.FC<ExperimentListProps> = ({
                         <Chip
                           icon={<ResourceIcon sx={{ fontSize: 10 }} />}
                           label="resources"
+                          size="small"
+                          variant="outlined"
+                          sx={{ fontSize: '0.65rem', height: 18 }}
+                        />
+                      )}
+
+                      {experiment.has_text && (
+                        <Chip
+                          icon={<TextIcon sx={{ fontSize: 10 }} />}
+                          label="text"
                           size="small"
                           variant="outlined"
                           sx={{ fontSize: '0.65rem', height: 18 }}

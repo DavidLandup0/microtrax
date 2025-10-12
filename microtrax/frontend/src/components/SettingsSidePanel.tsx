@@ -8,7 +8,6 @@ import {
   Select,
   MenuItem,
   Paper,
-  Divider,
   Drawer,
   IconButton,
   Collapse,
@@ -34,7 +33,6 @@ const SettingsSidePanel: React.FC<SettingsSidePanelProps> = ({ open, onClose }) 
   const { plotSettings, updatePlotSettings, setColorPalettes } = useSettings();
   const [collapsed, setCollapsed] = useState(false);
   const [localColorPalettes, setLocalColorPalettes] = useState<Array<{value: string, label: string, colors: string[]}>>([]);
-  const [plotTemplates, setPlotTemplates] = useState<Array<{value: string, label: string}>>([]);
 
   useEffect(() => {
     const loadPlotOptions = async () => {
@@ -47,10 +45,6 @@ const SettingsSidePanel: React.FC<SettingsSidePanelProps> = ({ open, onClose }) 
         }));
         setLocalColorPalettes(palettes);
         setColorPalettes(palettes);
-        setPlotTemplates([
-          { value: 'none', label: 'None (Default)' },
-          ...options.templates
-        ]);
       } catch (error) {
         console.warn('Failed to load plot options, using fallbacks:', error);
         // Fallback values
@@ -63,7 +57,7 @@ const SettingsSidePanel: React.FC<SettingsSidePanelProps> = ({ open, onClose }) 
     };
 
     loadPlotOptions();
-  }, []);
+  }, [setColorPalettes]);
 
   return (
     <Drawer

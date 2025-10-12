@@ -9,6 +9,9 @@ import sys
 
 from microtrax.constants import MTX_GLOBALDIR
 
+# Configure logging to show INFO level messages
+logging.basicConfig(level=logging.INFO, format='%(message)s')
+
 def run_dashboard(logdir: Optional[str] = None, backend_port: int = 8080, host: str = "localhost"):
     """
     Runs the microtrax dashboard.
@@ -23,7 +26,6 @@ def run_dashboard(logdir: Optional[str] = None, backend_port: int = 8080, host: 
     logging.info("🚀 Starting microtrax dashboard...")
     logging.info(f"📁 Loading experiments from: {logdir}")
     logging.info(f"🎯 Backend API: http://{host}:{backend_port}")
-    logging.info("📦 Using bundled frontend")
     logging.info(f"🎨 Frontend UI: http://{host}:{backend_port}")
     logging.info(f"📊 API docs: http://{host}:{backend_port}/docs")
 

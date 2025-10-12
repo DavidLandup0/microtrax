@@ -79,7 +79,11 @@ async def rename_experiment(experiment_id: str, request: Request, rename_request
 
 
 @router.delete("/experiments/{experiment_id}")
-async def delete_experiment(experiment_id: str, request: Request, delete_request: DeleteExperimentRequest):
+async def delete_experiment(
+    experiment_id: str,
+    request: Request,
+    delete_request: DeleteExperimentRequest
+):
     """Delete an experiment"""
     if not delete_request.confirm:
         raise HTTPException(status_code=400, detail="Confirmation required to delete experiment")
