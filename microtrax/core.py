@@ -205,6 +205,23 @@ class Experiment:
         }
         self._append_to_log(metadata)
 
+    def _handle_step(self, step: Optional[int]) -> int:
+        """Handle step tracking and auto-increment.
+
+        Args:
+            step: The step value, or None to auto-increment
+
+        Returns:
+            The step value to use
+        """
+        if step is None:
+            current_step = self.step_counter
+            self.step_counter += 1
+            return current_step
+        else:
+            self.step_counter = max(self.step_counter, step + 1)
+            return step
+
     def log_entry(self, data: Dict[str, Any]):
         try:
             # Create log entry
@@ -215,11 +232,7 @@ class Experiment:
             }
 
             # Handle step auto-increment
-            if 'step' not in data:
-                data['step'] = self.step_counter
-                self.step_counter += 1
-            else:
-                self.step_counter = max(self.step_counter, data['step'] + 1)
+            data['step'] = self._handle_step(data.get('step'))
 
             # Process each key-value pair - only handle regular metrics and special _images entries
             for key, value in data.items():
@@ -268,11 +281,7 @@ class Experiment:
         """Log text data to separate text file"""
         try:
             # Handle step
-            if step is None:
-                step = self.step_counter
-                self.step_counter += 1
-            else:
-                self.step_counter = max(self.step_counter, step + 1)
+            step = self._handle_step(step)
 
             # Normalize to list of rows
             if isinstance(data, str):

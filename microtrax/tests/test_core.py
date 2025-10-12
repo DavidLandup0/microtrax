@@ -273,6 +273,93 @@ class TestEnums:
         assert str(ExperimentStatus.RUNNING) == "running"
 
 
+class TestStepHandling:
+
+    def test_handle_step_auto_increment(self, temp_logdir):
+        """Test automatic step increment"""
+        mtx.init(temp_logdir)
+        exp = core._current_experiment
+
+        # Test None (auto-increment)
+        assert exp._handle_step(None) == 0
+        assert exp.step_counter == 1
+
+        assert exp._handle_step(None) == 1
+        assert exp.step_counter == 2
+
+        assert exp._handle_step(None) == 2
+        assert exp.step_counter == 3
+
+        mtx.finish()
+
+    def test_handle_step_explicit(self, temp_logdir):
+        """Test explicit step values"""
+        mtx.init(temp_logdir)
+        exp = core._current_experiment
+
+        # Test explicit step
+        assert exp._handle_step(5) == 5
+        assert exp.step_counter == 6  # Should be updated to next step
+
+        # Test earlier step doesn't decrease counter
+        assert exp._handle_step(3) == 3
+        assert exp.step_counter == 6  # Should stay at 6
+
+        # Test later step updates counter
+        assert exp._handle_step(10) == 10
+        assert exp.step_counter == 11
+
+        mtx.finish()
+
+    def test_handle_step_mixed(self, temp_logdir):
+        """Test mixing auto and explicit steps"""
+        mtx.init(temp_logdir)
+        exp = core._current_experiment
+
+        # Auto-increment
+        assert exp._handle_step(None) == 0
+        assert exp.step_counter == 1
+
+        # Jump to explicit step
+        assert exp._handle_step(5) == 5
+        assert exp.step_counter == 6
+
+        # Auto continues from new counter
+        assert exp._handle_step(None) == 6
+        assert exp.step_counter == 7
+
+        mtx.finish()
+
+    def test_log_uses_handle_step(self, temp_logdir):
+        """Test that log() correctly uses _handle_step"""
+        mtx.init(temp_logdir)
+
+        # Log without step
+        mtx.log({"loss": 1.0})
+        mtx.log({"loss": 0.8})
+
+        # Log with explicit step
+        mtx.log({"loss": 0.5, "step": 10})
+
+        # Next log without step should be 11
+        mtx.log({"loss": 0.3})
+
+        # Check the logged steps
+        experiments_dir = Path(temp_logdir) / EXPERIMENTS_DIR
+        log_files = list(experiments_dir.glob('*.jsonl'))
+
+        with open(log_files[0], 'r') as f:
+            lines = f.readlines()[1:]  # Skip metadata
+
+        entries = [json.loads(line) for line in lines]
+        assert entries[0]['data']['step'] == 0
+        assert entries[1]['data']['step'] == 1
+        assert entries[2]['data']['step'] == 10
+        assert entries[3]['data']['step'] == 11
+
+        mtx.finish()
+
+
 class TestErrorHandling:
 
     def test_log_without_init(self):
