@@ -1,5 +1,5 @@
 from fastapi import FastAPI
-from microtrax.backend.routers import experiments, plots, images
+from microtrax.backend.routers import experiments, plots, images, text
 from microtrax.backend.services.frontend_service import FrontendService
 
 
@@ -13,6 +13,7 @@ def create_app(logdir: str) -> FastAPI:
     app.include_router(experiments.router)
     app.include_router(plots.router)
     app.include_router(images.router)
+    app.include_router(text.router)
 
     FrontendService(app)
 

@@ -12,6 +12,7 @@ export interface Experiment {
   log_count: number;
   has_resources: boolean;
   has_images: boolean;
+  has_text: boolean;
 }
 
 export interface ExperimentsResponse {
@@ -34,4 +35,16 @@ export interface ImageData {
   key: string;
   data: string; // base64
   label?: string;
+}
+
+export interface TextRequest {
+  experiment: string;
+}
+
+export interface TextEntry {
+  type: 'text';
+  step: number;
+  timestamp: number;
+  columns: string[];
+  rows: Record<string, any>[];
 }

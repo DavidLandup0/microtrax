@@ -6,6 +6,7 @@ MTX_GLOBALDIR = os.path.expanduser(MTX_GLOBALDIR_NAME)
 # Directory names
 EXPERIMENTS_DIR = "experiments"
 RESOURCES_DIR = "resources"
+TEXT_DIR = "text"
 
 # Metric lists
 RESOURCE_METRICS = [

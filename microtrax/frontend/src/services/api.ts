@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { ExperimentsResponse, PlotRequest, ImagesRequest, ImageData } from '../types';
+import { ExperimentsResponse, PlotRequest, ImagesRequest, ImageData, TextRequest, TextEntry } from '../types';
 
 const API_BASE = process.env.NODE_ENV === 'development' ? 'http://localhost:8080' : '';
 
@@ -36,6 +36,11 @@ export class ApiService {
 
   static async getPlotOptions(): Promise<{color_scales: Array<{value: string, label: string, colors: string[], type: string}>, templates: Array<{value: string, label: string}>}> {
     const response = await api.get('/api/plot-options');
+    return response.data;
+  }
+
+  static async getText(request: TextRequest): Promise<TextEntry[]> {
+    const response = await api.post('/api/text', request);
     return response.data;
   }
 }

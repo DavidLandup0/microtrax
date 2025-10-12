@@ -4,7 +4,7 @@ from pathlib import Path
 
 from microtrax.backend.services.experiment_service import load_experiments, extract_metrics
 from microtrax.backend.domain.schemas import RenameExperimentRequest, DeleteExperimentRequest
-from microtrax.constants import EXPERIMENTS_DIR, RESOURCES_DIR
+from microtrax.constants import EXPERIMENTS_DIR, RESOURCES_DIR, TEXT_DIR
 
 router = APIRouter(prefix="/api", tags=["experiments"])
 
@@ -20,12 +20,17 @@ async def get_experiments(request: Request):
         # Simplify experiment data for frontend
         trimmed_experiments = {}
         for exp_id, exp_data in experiments.items():
+            # Check if text file exists
+            text_file = Path(logdir) / TEXT_DIR / f'{exp_id}_text.jsonl'
+            has_text = text_file.exists()
+
             trimmed_experiments[exp_id] = {
                 'id': exp_id,
                 'metadata': exp_data['metadata'],
                 'log_count': len(exp_data['logs']),
                 'has_resources': len(exp_data.get('resources', [])) > 0,
-                'has_images': exp_data['metadata'].get('has_images', False)
+                'has_images': exp_data['metadata'].get('has_images', False),
+                'has_text': has_text
             }
 
         return {
@@ -82,9 +87,11 @@ async def delete_experiment(experiment_id: str, request: Request, delete_request
     logdir = request.app.state.logdir
     experiments_dir = Path(logdir) / EXPERIMENTS_DIR
     resources_dir = Path(logdir) / RESOURCES_DIR
+    text_dir = Path(logdir) / TEXT_DIR
 
     experiment_file = experiments_dir / f'{experiment_id}.jsonl'
     resource_file = resources_dir / f'{experiment_id}_resources.jsonl'
+    text_file = text_dir / f'{experiment_id}_text.jsonl'
 
     if not experiment_file.exists():
         raise HTTPException(status_code=404, detail="Experiment not found")
@@ -96,6 +103,10 @@ async def delete_experiment(experiment_id: str, request: Request, delete_request
         # Delete resource file if it exists
         if resource_file.exists():
             resource_file.unlink()
+
+        # Delete text file if it exists
+        if text_file.exists():
+            text_file.unlink()
 
         return {"success": True, "message": "Experiment deleted successfully"}
 

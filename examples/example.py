@@ -25,6 +25,8 @@ batch = np.random.rand(8, 3, 64, 64)  # (B, C, H, W)
 labels = [0, 1, 2, 3, 4, 5, 6, 7]
 mtx.log_images(batch, step=11, labels=labels)
 
+mtx.log_text({"input": "Question?", "output": "Answer!"}, step=1)
+
 # Log matplotlib figures
 fig, ax = plt.subplots()
 ax.plot([1, 2, 3, 4], [1, 4, 2, 3])
