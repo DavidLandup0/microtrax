@@ -178,6 +178,7 @@ const MetricPlots: React.FC<MetricPlotsProps> = ({
             experiments: selectedExperiments,
             metric,
             x_axis: plotSettings.xAxisMode,
+            y_axis_scale: plotSettings.yAxisScale,
           });
           return { metric, data: plotData, error: null };
         } catch (error) {

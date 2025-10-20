@@ -44,7 +44,7 @@ def _extract_log_data(entry: Dict, metric: str, start_time: float, x_axis: str, 
             values.append(None)
 
 
-def create_metric_plot(experiments: Dict[str, Dict[str, Any]], selected_experiments: List[str], metric: str, x_axis: str = 'step') -> Dict:
+def create_metric_plot(experiments: Dict[str, Dict[str, Any]], selected_experiments: List[str], metric: str, x_axis: str = 'step', y_axis_scale: str = 'linear') -> Dict:
     """Create a Plotly figure for a specific metric"""
     fig = go.Figure()
 
@@ -113,7 +113,16 @@ def create_metric_plot(experiments: Dict[str, Dict[str, Any]], selected_experime
             showgrid=True,
             gridwidth=1,
             gridcolor='rgba(128,128,128,0.3)',
-            griddash='dot'
+            griddash='dot',
+            type=y_axis_scale,
+            tickformat='.1e' if y_axis_scale == 'log' else None,
+            dtick=1 if y_axis_scale == 'log' else None,
+            minor=dict(
+                ticks='inside',
+                showgrid=True,
+                gridcolor='rgba(128,128,128,0.15)',
+                gridwidth=0.5
+            ) if y_axis_scale == 'log' else None
         ),
         legend=dict(
             orientation='h',  # Horizontal legend

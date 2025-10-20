@@ -24,6 +24,7 @@ export interface PlotRequest {
   experiments: string[];
   metric: string;
   x_axis?: 'step' | 'time';
+  y_axis_scale?: 'linear' | 'log';
 }
 
 export interface ImagesRequest {

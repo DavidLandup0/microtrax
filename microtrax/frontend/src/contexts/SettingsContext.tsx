@@ -7,6 +7,7 @@ export interface PlotSettings {
   autoRefreshEnabled: boolean;
   autoRefreshInterval: number; // in seconds
   xAxisMode: 'step' | 'time';
+  yAxisScale: 'linear' | 'log';
 }
 
 export interface ColorPalette {
@@ -29,6 +30,7 @@ const defaultPlotSettings: PlotSettings = {
   autoRefreshEnabled: true,
   autoRefreshInterval: 5, // 5 seconds
   xAxisMode: 'step',
+  yAxisScale: 'linear',
 };
 
 const SettingsContext = createContext<SettingsContextType | undefined>(undefined);
