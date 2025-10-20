@@ -6,6 +6,7 @@ class PlotRequest(BaseModel):
     experiments: List[str]
     metric: str
     x_axis: Optional[str] = 'step'
+    y_axis_scale: Optional[str] = 'linear'
 
 class ImagesRequest(BaseModel):
     experiment: str

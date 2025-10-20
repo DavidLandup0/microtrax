@@ -51,7 +51,8 @@ async def create_plot(request: Request, plot_request: PlotRequest):
             experiments,
             plot_request.experiments,
             plot_request.metric,
-            plot_request.x_axis or 'step'
+            plot_request.x_axis or 'step',
+            plot_request.y_axis_scale or 'linear'
         )
         return plot_data
     except Exception as e:

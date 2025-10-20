@@ -215,9 +215,32 @@ const SettingsSidePanel: React.FC<SettingsSidePanelProps> = ({ open, onClose }) 
                 label={plotSettings.xAxisMode === 'time' ? 'Clock time' : 'Steps'}
               />
               <Typography variant="body2" color="text.secondary" sx={{ mt: 1 }}>
-                {plotSettings.xAxisMode === 'time' 
-                  ? 'Show metrics over real time (minutes from start)' 
+                {plotSettings.xAxisMode === 'time'
+                  ? 'Show metrics over real time (minutes from start)'
                   : 'Show metrics over training steps'}
+              </Typography>
+            </Paper>
+
+            {/* Y-Axis Scale Settings */}
+            <Paper sx={{ p: 2, mb: 2 }} elevation={1}>
+              <Typography variant="subtitle1" gutterBottom>
+                <TimelineIcon sx={{ mr: 1, fontSize: 20, verticalAlign: 'text-bottom' }} />
+                Y-Axis Scale
+              </Typography>
+              <FormControlLabel
+                control={
+                  <Switch
+                    checked={plotSettings.yAxisScale === 'log'}
+                    onChange={(e) => updatePlotSettings({ yAxisScale: e.target.checked ? 'log' : 'linear' })}
+                    size="small"
+                  />
+                }
+                label={plotSettings.yAxisScale === 'log' ? 'Logarithmic' : 'Linear'}
+              />
+              <Typography variant="body2" color="text.secondary" sx={{ mt: 1 }}>
+                {plotSettings.yAxisScale === 'log'
+                  ? 'Use log scale for Y-axis'
+                  : 'Use linear scale for Y-axis'}
               </Typography>
             </Paper>
           </Box>
